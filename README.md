@@ -7,7 +7,7 @@
   This web app will be used to visualize the amount of sugar that is contained in a specific food item. The intent of creating this tool
   is to provide a basis of comparison for the sugar levels in consumer food items.  
 
-## Summary ##
+<!-- ## Summary ##
   > Give a summary of the product and the benefit. Assume the reader will not read anything else so make this paragraph good.
 
 ## Problem ##
@@ -26,4 +26,4 @@
   > Provide a quote from a hypothetical customer that describes how they experienced the benefit.
 
 ## Closing and Call to Action ##
-  > Wrap it up and give pointers where the reader should go next.
+  > Wrap it up and give pointers where the reader should go next. -->
