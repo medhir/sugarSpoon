@@ -7,7 +7,7 @@ var FoodItem = Backbone.Model.extend({
 });
 
 var SugarModel = Backbone.Model.extend({
-  
+
 });
 
 /************************************************
@@ -23,7 +23,19 @@ var FoodItems = Backbone.Collection.extend({
 *************************************************/
 
 var searchInput = Backbone.View.extend({
+  events: {
+    'submit' : 'runQuery'
+  }, 
 
+  runQuery : function(e) {
+    e.preventDefault();
+    //run query on DB
+    //on success
+      //remove failure thing 
+      //add models to collection
+    //on failure
+      //append failure thing
+  }
 });
 
 var FoodItemView = Backbone.View.extend({
@@ -37,3 +49,12 @@ var FoodItemsView = Backbone.View.extend({
 var SugarView = Backbone.View.extend({
 
 });
+
+
+
+/************************************************
+      Instantiation of everything
+*************************************************/
+
+new searchInput({el: $('#searchForm')});
+

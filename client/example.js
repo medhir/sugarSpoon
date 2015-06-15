@@ -19,4 +19,9 @@ How to make an API request
 
 Send a JSON object for the request, Content-Type header = "application/json"
 
+{
+ "appId":"YOUR_API_ID",
+ "appKey":"YOUR_API_KEY",
+ "query":"Cookies `n Cream"
+}
 */

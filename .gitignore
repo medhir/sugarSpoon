@@ -1,2 +1,5 @@
 #frontend
 bower_components
+
+#API config
+client/config.js
