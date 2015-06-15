@@ -10,7 +10,6 @@
 
 var FoodItem = Backbone.Model.extend({
   defaults: {
-    id: '',
     name: ''
   }
 });
@@ -24,7 +23,7 @@ var SugarModel = Backbone.Model.extend({
 *************************************************/
 
 var FoodItems = Backbone.Collection.extend({
-  model: app.FoodItem
+  model: FoodItem
 });
 
 /************************************************
@@ -39,14 +38,19 @@ var searchInput = Backbone.View.extend({
   runQuery : function(e) {
     e.preventDefault();
     var $input = $('#searchInput');
-    app.foodResults($input.val(), this.collection);
+    //TODO: remove previous items from collection
+    //app.foodResults($input.val(), this.collection);
+    this.collection.add({
+      name: $input.val()
+    });
+    console.log(this.collection);
     $input.val('')
   }
 });
 
 var FoodItemView = Backbone.View.extend({
   tagName: 'div',
-  className: 'foodItem', 
+  className: 'item', 
 
   template: _.template('<h4 class="name"><%= name %></h4>'), 
 
@@ -56,10 +60,10 @@ var FoodItemView = Backbone.View.extend({
 
   sugarContent: function() {
     console.log('should get sugarContent');
-  }
+  },
 
   render: function() {
-    this.$el.html(this.template(this.model.attributes));
+    return this.$el.html(this.template(this.model.attributes));
   }
 });
 
@@ -67,10 +71,15 @@ var FoodItemsView = Backbone.View.extend({
   tagName: 'div', 
   className: 'results', 
 
-  render: function(){
-    //detach previous items
-    this.$el.children.detach();
+  initialize: function() {
+    this.collection.on('add', this.render, this);
+    this.render();
+  },
 
+  render: function(){
+    console.log('render');
+    //detach previous items
+    this.$el.children().detach();
 
     this.$el.append(
       this.collection.map(function(item) {
@@ -89,7 +98,7 @@ var SugarView = Backbone.View.extend({
       Helper methods
 *************************************************/
 
-var foodResults = function(query, collection) {
+var getResults = function(query, collection) {
   $.ajax({
     url: 'https://api.nutritionix.com/v1_1/brand/search',
     method: 'GET',
@@ -122,7 +131,17 @@ var itemById = function(id) {
 };
 
 /************************************************
-      Instantiation of everything
+      Instantiation of everything --- Refactor later
 *************************************************/
 
-new app.searchInput({el: $('#searchForm')});
+$(function(){
+  var foodResults = new FoodItems();
+
+  new searchInput({ el: $('#searchForm'), collection: foodResults });
+
+  var foodResultsView = new FoodItemsView({ collection: foodResults });
+
+  $('body').append(foodResultsView.$el);
+  
+});
+
