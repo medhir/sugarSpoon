@@ -2,8 +2,17 @@
       Models
 *************************************************/
 
-var FoodItem = Backbone.Model.extend({
+// var appModel = Backbone.Model.extend({
+//   initialize: function(params) {
+//     this.set('searchInput', )
+//   }
+// });
 
+var FoodItem = Backbone.Model.extend({
+  defaults: {
+    id: '',
+    name: ''
+  }
 });
 
 var SugarModel = Backbone.Model.extend({
@@ -15,7 +24,7 @@ var SugarModel = Backbone.Model.extend({
 *************************************************/
 
 var FoodItems = Backbone.Collection.extend({
-
+  model: app.FoodItem
 });
 
 /************************************************
@@ -30,24 +39,45 @@ var searchInput = Backbone.View.extend({
   runQuery : function(e) {
     e.preventDefault();
     var $input = $('#searchInput');
-    foodResults($input.val());
+    app.foodResults($input.val(), this.collection);
     $input.val('')
-    //run query on DB
-    //on success
-      //remove failure thing 
-      //add models to collection
-      //clear input field
-    //on failure
-      //append failure thing
   }
 });
 
 var FoodItemView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'foodItem', 
 
+  template: _.template('<h4 class="name"><%= name %></h4>'), 
+
+  events: {
+    'click .name' : 'sugarContent'
+  },
+
+  sugarContent: function() {
+    console.log('should get sugarContent');
+  }
+
+  render: function() {
+    this.$el.html(this.template(this.model.attributes));
+  }
 });
 
 var FoodItemsView = Backbone.View.extend({
+  tagName: 'div', 
+  className: 'results', 
 
+  render: function(){
+    //detach previous items
+    this.$el.children.detach();
+
+
+    this.$el.append(
+      this.collection.map(function(item) {
+        return new FoodItemView({model: item}).render();
+        })
+      );
+  }
 });
 
 var SugarView = Backbone.View.extend({
@@ -59,7 +89,7 @@ var SugarView = Backbone.View.extend({
       Helper methods
 *************************************************/
 
-var foodResults = function(query) {
+var foodResults = function(query, collection) {
   $.ajax({
     url: 'https://api.nutritionix.com/v1_1/brand/search',
     method: 'GET',
@@ -71,11 +101,18 @@ var foodResults = function(query) {
       'content-type': 'application/json'
     }, 
     success: function(data) {
-      debugger;
-      console.log(data);
+      var hits = data.hits;
+      hits.forEach(function(hit) {
+        var params = hit.fields;
+        var item = new FoodItem({
+          id : fields._id,
+          name : fields.name
+        });
+        collection.add(item);
+      });
     }, 
     error: function(err) {
-      console.log(err);
+      console.error(err);
     }
   });
 };
@@ -88,5 +125,4 @@ var itemById = function(id) {
       Instantiation of everything
 *************************************************/
 
-new searchInput({el: $('#searchForm')});
-
+new app.searchInput({el: $('#searchForm')});
