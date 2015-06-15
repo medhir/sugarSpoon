@@ -29,10 +29,14 @@ var searchInput = Backbone.View.extend({
 
   runQuery : function(e) {
     e.preventDefault();
+    var $input = $('#searchInput');
+    foodResults($input.val());
+    $input.val('')
     //run query on DB
     //on success
       //remove failure thing 
       //add models to collection
+      //clear input field
     //on failure
       //append failure thing
   }
@@ -51,6 +55,34 @@ var SugarView = Backbone.View.extend({
 });
 
 
+/************************************************
+      Helper methods
+*************************************************/
+
+var foodResults = function(query) {
+  $.ajax({
+    url: 'https://api.nutritionix.com/v1_1/brand/search',
+    method: 'GET',
+    crossDomain: true,
+    data: {
+      appId: apiId, 
+      appKey: apiKey, 
+      query: query, 
+      'content-type': 'application/json'
+    }, 
+    success: function(data) {
+      debugger;
+      console.log(data);
+    }, 
+    error: function(err) {
+      console.log(err);
+    }
+  });
+};
+
+var itemById = function(id) {
+
+};
 
 /************************************************
       Instantiation of everything
