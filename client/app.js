@@ -39,12 +39,8 @@ var searchInput = Backbone.View.extend({
     e.preventDefault();
     var $input = $('#searchInput');
     //TODO: remove previous items from collection
-    //app.foodResults($input.val(), this.collection);
-    this.collection.add({
-      name: $input.val()
-    });
-    console.log(this.collection);
-    $input.val('')
+    getResults($input.val(), this.collection);
+    $input.val('');
   }
 });
 
@@ -77,7 +73,6 @@ var FoodItemsView = Backbone.View.extend({
   },
 
   render: function(){
-    console.log('render');
     //detach previous items
     this.$el.children().detach();
 
@@ -106,16 +101,18 @@ var getResults = function(query, collection) {
     data: {
       appId: apiId, 
       appKey: apiKey, 
-      query: query, 
-      'content-type': 'application/json'
-    }, 
+      query: query
+    },
+    dataType: 'json',  
     success: function(data) {
-      var hits = data.hits;
-      hits.forEach(function(hit) {
+      console.log(data);
+      console.log('data hits', data.hits);
+      data.hits.forEach(function(hit) {
+        console.log('single hit', hit);
         var params = hit.fields;
         var item = new FoodItem({
-          id : fields._id,
-          name : fields.name
+          id : params._id,
+          name : params.name
         });
         collection.add(item);
       });
