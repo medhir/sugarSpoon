@@ -90,7 +90,7 @@ var SugarView = Backbone.View.extend({
   tagName: 'div',
   className: 'sugarContent',
 
-  template: _.template('<h4><%= name %> has <%= sugar %> grams of sugar. This is equivalent to <strong><%= spoons %></strong> teaspoons.</h4>'),
+  template: _.template('<h4><%= name %> has <%= sugar %> grams of sugar. This is equivalent to <strong><%= cubes %></strong> cubes of subar.</h4>'),
 
   initialize: function() {
     this.model.on('change', this.render, this);
@@ -99,6 +99,24 @@ var SugarView = Backbone.View.extend({
   render: function(){
     this.$el.children().detach();
     return this.$el.append(this.template(this.model.attributes));
+  }
+});
+
+var cubesView = Backbone.View.extend({
+  tagName: 'div', 
+  className: 'sugarCubes', 
+
+  initialize: function(){
+    this.model.on('change', this.render, this);
+  }, 
+
+  render: function(){
+    this.$el.children().detach();
+
+    var numCubes = Math.floor(this.model.get('cubes'));
+    for(var i = 0; i < numCubes; i++) {
+      this.$el.append('<img src="assets/sugar_cube1.png"/>')
+    }
   }
 });
 
@@ -159,7 +177,7 @@ var getInfo = function(brandItem, nutritionInfo) {
       nutritionInfo.set({
         name: brandItem.get('name'), 
         sugar: sugars, 
-        spoons: sugars/6
+        cubes: Math.round(sugars/4*1000)/1000
       });
     }, 
     error: function(err) {
@@ -184,16 +202,18 @@ $(function(){
   var nutritionInfo = new SugarModel({
     name: 'asdf', 
     sugar: 2, 
-    spoons: 3
+    cubes: 3
   });
 
   var nutritionView = new SugarView({model: nutritionInfo});
+  var sugarCubeView = new cubesView({model: nutritionInfo});
 
   foodResults.on('getInfoById', function(item) {
     getInfo(item, nutritionInfo);
   }, this);
 
-  $('body').append(nutritionView.render());
+  $('body').append(nutritionView.$el);
+  $('body').append(sugarCubeView.$el);
   
 });
 
