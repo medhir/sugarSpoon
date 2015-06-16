@@ -1,0 +1,15 @@
+$pink : #FFA3D1;
+$white: #FFF;
+$primary-font: 'Lato', sans-serif;
+$fancy-font: 'Lobster', cursive;
+
+body {
+  font-family : $primary-font;
+  background-color: $pink;
+}
+
+#logo {
+  font-family: $fancy-font;
+  font-size: 4em;
+  color: $white;
+}
