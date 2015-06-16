@@ -3,3 +3,6 @@ bower_components
 
 #API config
 client/config.js
+
+#node modules
+node_modules
