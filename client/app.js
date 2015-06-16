@@ -18,9 +18,7 @@ var FoodItem = Backbone.Model.extend({
   }
 });
 
-var SugarModel = Backbone.Model.extend({
-  //idk if anything needs to go in here...?
-});
+var SugarModel = Backbone.Model.extend({});
 
 /************************************************
       Collections
@@ -99,7 +97,7 @@ var SugarView = Backbone.View.extend({
   }, 
 
   render: function(){
-    this.$el.children().detach;
+    this.$el.children().detach();
     return this.$el.append(this.template(this.model.attributes));
   }
 });
@@ -121,6 +119,7 @@ var getResults = function(query, collection) {
     },
     dataType: 'json',  
     success: function(data) {
+      collection.reset();
       data.hits.forEach(function(hit) {
         console.log('single hit', hit);
         var params = hit.fields;
@@ -142,7 +141,6 @@ var getInfo = function(brandItem, nutritionInfo) {
     data: {
       appId: apiId, 
       appKey: apiKey, 
-      // query: brandItem.get('name'),
       brand_id: nutritionInfo.get('id'),
       fields: 'nf_sugars',
       results: '0:50' 
@@ -155,18 +153,14 @@ var getInfo = function(brandItem, nutritionInfo) {
         var hitSugar = hits[i]['fields']['nf_sugars'];
         if(hitSugar !== null && hitSugar > sugars) {
           sugars = hits[i]['fields']['nf_sugars'];
-          console.log(sugars);
         }
       }
-      // nutritionInfo.set('name', brandItem.get('name'));
-      // nutritionInfo.set('spoons', nutritionInfo.get('sugar')/6);
 
       nutritionInfo.set({
         name: brandItem.get('name'), 
         sugar: sugars, 
         spoons: sugars/6
       });
-      console.log(nutritionInfo);
     }, 
     error: function(err) {
       console.error(err);
@@ -175,7 +169,7 @@ var getInfo = function(brandItem, nutritionInfo) {
 };
 
 /************************************************
-      Instantiation of everything --- Refactor Later
+      Instantiation of everything
 *************************************************/
 
 $(function(){
