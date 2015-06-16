@@ -47,13 +47,13 @@ var searchInput = Backbone.View.extend({
 });
 
 var FoodItemView = Backbone.View.extend({
-  tagName: 'div',
-  className: 'item', 
+  tagName: 'li',
+  className: 'list-group-item', 
 
-  template: _.template('<h4 class="name"><%= name %></h4>'), 
+  // template: _.template('<h4 class="name"><%= name %></h4>'), 
 
   events: {
-    'click .name' : 'sugarContent'
+    'click' : 'sugarContent'
   },
 
   sugarContent: function() {
@@ -61,13 +61,13 @@ var FoodItemView = Backbone.View.extend({
   },
 
   render: function() {
-    return this.$el.html(this.template(this.model.attributes));
+    return this.$el.text(this.model.get('name'));
   }
 });
 
 var FoodItemsView = Backbone.View.extend({
-  tagName: 'div', 
-  className: 'results', 
+  tagName: 'ul', 
+  className: 'list-group', 
 
   initialize: function() {
     this.collection.on('add', this.render, this);
@@ -88,9 +88,9 @@ var FoodItemsView = Backbone.View.extend({
 
 var SugarView = Backbone.View.extend({
   tagName: 'div',
-  className: 'sugarContent',
+  className: 'sugarDescription',
 
-  template: _.template('<h4><%= name %> has <%= sugar %> grams of sugar. This is equivalent to <strong><%= cubes %></strong> cubes of subar.</h4>'),
+  template: _.template('<h4 class="center"><%= name %> has <%= sugar %> grams of sugar. That is equivalent to around <strong><%= cubes %></strong> sugar cubes.</h4>'),
 
   initialize: function() {
     this.model.on('change', this.render, this);
@@ -114,8 +114,9 @@ var cubesView = Backbone.View.extend({
     this.$el.children().detach();
 
     var numCubes = Math.floor(this.model.get('cubes'));
+    var fractionCube = this.model.get('cubes') - numCubes;
     for(var i = 0; i < numCubes; i++) {
-      this.$el.append('<img src="assets/sugar_cube1.png"/>')
+      this.$el.append('<img src="assets/sugar_cube1.png"/>');
     }
   }
 });
@@ -126,64 +127,81 @@ var cubesView = Backbone.View.extend({
 *************************************************/
 
 var getResults = function(query, collection) {
-  $.ajax({
-    url: 'https://api.nutritionix.com/v1_1/brand/search',
-    method: 'GET',
-    crossDomain: true,
-    data: {
-      appId: apiId, 
-      appKey: apiKey, 
-      query: query
-    },
-    dataType: 'json',  
-    success: function(data) {
-      collection.reset();
-      data.hits.forEach(function(hit) {
-        console.log('single hit', hit);
-        var params = hit.fields;
-        var item = new FoodItem(params);
-        collection.add(item);
-      });
-    }, 
-    error: function(err) {
-      console.error(err);
-    }
-  });
+  // $.ajax({
+  //   url: 'https://api.nutritionix.com/v1_1/brand/search',
+  //   method: 'GET',
+  //   crossDomain: true,
+  //   data: {
+  //     appId: apiId, 
+  //     appKey: apiKey, 
+  //     query: query
+  //   },
+  //   dataType: 'json',  
+  //   success: function(data) {
+  //     collection.reset();
+  //     data.hits.forEach(function(hit) {
+  //       console.log('single hit', hit);
+  //       var params = hit.fields;
+  //       var item = new FoodItem(params);
+  //       collection.add(item);
+  //     });
+  //   }, 
+  //   error: function(err) {
+  //     console.error(err);
+  //   }
+  // });
+  var items = {
+    item1 : new FoodItem({name: 'Coke'}),
+    item2 : new FoodItem({name: 'Candy'}),
+    item3 : new FoodItem({name: 'Mountain Dew'}),
+    item4 : new FoodItem({name: 'Hello there'}),
+    item5 : new FoodItem({name: 'Placeholder'})
+  };
+
+  collection.reset();
+  for(var item in items) {
+    collection.add(items[item]);
+  }
 };
 
 var getInfo = function(brandItem, nutritionInfo) {
-  $.ajax({
-    url: 'https://api.nutritionix.com/v1_1/search/' + brandItem.get('name'), 
-    method: 'GET', 
-    crossDomain: true, 
-    data: {
-      appId: apiId, 
-      appKey: apiKey, 
-      brand_id: nutritionInfo.get('id'),
-      fields: 'nf_sugars',
-      results: '0:50' 
-    }, 
-    dataType: 'json', 
-    success: function(data) {
-      var hits = data.hits;
-      var sugars = 0;
-      for(var i = 0; i < hits.length; i++) {
-        var hitSugar = hits[i].fields.nf_sugars;
-        if(hitSugar !== null && hitSugar > sugars) {
-          sugars = hits[i].fields.nf_sugars;
-        }
-      }
+  // $.ajax({
+  //   url: 'https://api.nutritionix.com/v1_1/search/' + brandItem.get('name'), 
+  //   method: 'GET', 
+  //   crossDomain: true, 
+  //   data: {
+  //     appId: apiId, 
+  //     appKey: apiKey, 
+  //     brand_id: nutritionInfo.get('id'),
+  //     fields: 'nf_sugars',
+  //     results: '0:50' 
+  //   }, 
+  //   dataType: 'json', 
+  //   success: function(data) {
+  //     var hits = data.hits;
+  //     var sugars = 0;
+  //     for(var i = 0; i < hits.length; i++) {
+  //       var hitSugar = hits[i].fields.nf_sugars;
+  //       if(hitSugar !== null && hitSugar > sugars) {
+  //         sugars = hits[i].fields.nf_sugars;
+  //       }
+  //     }
 
-      nutritionInfo.set({
-        name: brandItem.get('name'), 
-        sugar: sugars, 
-        cubes: Math.round(sugars/4*1000)/1000
+  //     nutritionInfo.set({
+  //       name: brandItem.get('name'), 
+  //       sugar: sugars, 
+  //       cubes: Math.round(sugars/4*1000)/1000
+  //     });
+  //   }, 
+  //   error: function(err) {
+  //     console.error(err);
+  //   } 
+  // });
+  nutritionInfo.set({
+        name: 'This item', 
+        sugar: 100, 
+        cubes: Math.round(100/4*1000)/1000
       });
-    }, 
-    error: function(err) {
-      console.error(err);
-    } 
-  });
 };
 
 /************************************************
@@ -197,7 +215,7 @@ $(function(){
 
   var foodResultsView = new FoodItemsView({ collection: foodResults });
 
-  $('body').append(foodResultsView.$el);
+  $('.resultsContainer').append(foodResultsView.$el);
 
   var nutritionInfo = new SugarModel({
     name: 'asdf', 
@@ -212,8 +230,8 @@ $(function(){
     getInfo(item, nutritionInfo);
   }, this);
 
-  $('body').append(nutritionView.$el);
-  $('body').append(sugarCubeView.$el);
+  $('.sugarContainer').append(nutritionView.$el);
+  $('.sugarContainer').append(sugarCubeView.$el);
   
 });
 

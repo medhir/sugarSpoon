@@ -2,18 +2,35 @@
 <head>
   <title>How much sugar is in that?</title>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link href='http://fonts.googleapis.com/css?family=Lato|Lobster' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <h1 id="logo">Sugar, sugar, sugar</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <h4>Search for an item, then click on one to get it's sugar content!</h4>
+        <form id="searchForm">
+          <div class="form-group">
+            <!-- <label for="exampleInputEmail1">Search Item</label> -->
+            <input type="item" class="form-control" id="searchInput" placeholder="Food Item">
+          </div>
+          <button type="submit" class="btn btn-default">Search</button>
+        </form>
+        <div class="resultsContainer"></div>
+      </div>
+      <div class="col-md-8 sugarContainer"></div>
+    </div>
+  </div>
   <script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript" src="../bower_components/underscore/underscore-min.js"></script>
   <script type="text/javascript" src="../bower_components/backbone/backbone-min.js"></script>
   <script type="text/javascript" src="config.js"></script>
   <script type="text/javascript" src="app.js"></script>
-  <h1 id="logo">Sugar, sugar, sugar</h1>
-  <form id="searchForm">
-    <input type="text" id="searchInput">
-    <input type="submit" name="submit">
-  </form>
 </body>
