@@ -150,9 +150,9 @@ var getInfo = function(brandItem, nutritionInfo) {
       var hits = data.hits;
       var sugars = 0;
       for(var i = 0; i < hits.length; i++) {
-        var hitSugar = hits[i]['fields']['nf_sugars'];
+        var hitSugar = hits[i].fields.nf_sugars;
         if(hitSugar !== null && hitSugar > sugars) {
-          sugars = hits[i]['fields']['nf_sugars'];
+          sugars = hits[i].fields.nf_sugars;
         }
       }
 
@@ -165,7 +165,7 @@ var getInfo = function(brandItem, nutritionInfo) {
     error: function(err) {
       console.error(err);
     } 
-  })
+  });
 };
 
 /************************************************
