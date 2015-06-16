@@ -150,17 +150,22 @@ var getInfo = function(brandItem, nutritionInfo) {
     dataType: 'json', 
     success: function(data) {
       var hits = data.hits;
-      var index;
+      var sugars = 0;
       for(var i = 0; i < hits.length; i++) {
-        if(hits[i]['fields']['nf_sugars'] !== null) {
-          index = i;
-          console.log(hits[i]['fields']['nf_sugars']);
-          nutritionInfo.set('sugar', hits[i]['fields']['nf_sugars']);
+        var hitSugar = hits[i]['fields']['nf_sugars'];
+        if(hitSugar !== null && hitSugar > sugars) {
+          sugars = hits[i]['fields']['nf_sugars'];
+          console.log(sugars);
         }
-        break;
       }
-      nutritionInfo.set('name', brandItem.get('name'));
-      nutritionInfo.set('spoons', nutritionInfo.get('sugar')/6);
+      // nutritionInfo.set('name', brandItem.get('name'));
+      // nutritionInfo.set('spoons', nutritionInfo.get('sugar')/6);
+
+      nutritionInfo.set({
+        name: brandItem.get('name'), 
+        sugar: sugars, 
+        spoons: sugars/6
+      });
       console.log(nutritionInfo);
     }, 
     error: function(err) {
