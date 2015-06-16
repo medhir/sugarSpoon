@@ -11,11 +11,15 @@
 var FoodItem = Backbone.Model.extend({
   defaults: {
     name: ''
+  }, 
+
+  getInfoById: function() {
+    this.trigger('getInfoById', this);
   }
 });
 
 var SugarModel = Backbone.Model.extend({
-
+  //idk if anything needs to go in here...?
 });
 
 /************************************************
@@ -55,7 +59,7 @@ var FoodItemView = Backbone.View.extend({
   },
 
   sugarContent: function() {
-    console.log('should get sugarContent');
+    this.model.getInfoById();
   },
 
   render: function() {
@@ -85,7 +89,19 @@ var FoodItemsView = Backbone.View.extend({
 });
 
 var SugarView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'sugarContent',
 
+  template: _.template('<h4><%= name %> has <%= sugar %> grams of sugar. This is equivalent to <strong><%= spoons %></strong> teaspoons.</h4>'),
+
+  initialize: function() {
+    this.model.on('change', this.render, this);
+  }, 
+
+  render: function(){
+    this.$el.children().detach;
+    return this.$el.append(this.template(this.model.attributes));
+  }
 });
 
 
@@ -105,15 +121,10 @@ var getResults = function(query, collection) {
     },
     dataType: 'json',  
     success: function(data) {
-      console.log(data);
-      console.log('data hits', data.hits);
       data.hits.forEach(function(hit) {
         console.log('single hit', hit);
         var params = hit.fields;
-        var item = new FoodItem({
-          id : params._id,
-          name : params.name
-        });
+        var item = new FoodItem(params);
         collection.add(item);
       });
     }, 
@@ -123,12 +134,43 @@ var getResults = function(query, collection) {
   });
 };
 
-var itemById = function(id) {
-
+var getInfo = function(brandItem, nutritionInfo) {
+  $.ajax({
+    url: 'https://api.nutritionix.com/v1_1/search/' + brandItem.get('name'), 
+    method: 'GET', 
+    crossDomain: true, 
+    data: {
+      appId: apiId, 
+      appKey: apiKey, 
+      // query: brandItem.get('name'),
+      brand_id: nutritionInfo.get('id'),
+      fields: 'nf_sugars',
+      results: '0:50' 
+    }, 
+    dataType: 'json', 
+    success: function(data) {
+      var hits = data.hits;
+      var index;
+      for(var i = 0; i < hits.length; i++) {
+        if(hits[i]['fields']['nf_sugars'] !== null) {
+          index = i;
+          console.log(hits[i]['fields']['nf_sugars']);
+          nutritionInfo.set('sugar', hits[i]['fields']['nf_sugars']);
+        }
+        break;
+      }
+      nutritionInfo.set('name', brandItem.get('name'));
+      nutritionInfo.set('spoons', nutritionInfo.get('sugar')/6);
+      console.log(nutritionInfo);
+    }, 
+    error: function(err) {
+      console.error(err);
+    } 
+  })
 };
 
 /************************************************
-      Instantiation of everything --- Refactor later
+      Instantiation of everything --- Refactor Later
 *************************************************/
 
 $(function(){
@@ -139,6 +181,20 @@ $(function(){
   var foodResultsView = new FoodItemsView({ collection: foodResults });
 
   $('body').append(foodResultsView.$el);
+
+  var nutritionInfo = new SugarModel({
+    name: 'asdf', 
+    sugar: 2, 
+    spoons: 3
+  });
+
+  var nutritionView = new SugarView({model: nutritionInfo});
+
+  foodResults.on('getInfoById', function(item) {
+    getInfo(item, nutritionInfo);
+  }, this);
+
+  $('body').append(nutritionView.render());
   
 });
 
