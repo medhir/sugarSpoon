@@ -15,7 +15,16 @@ body {
   color: $white;
 }
 
-.sugarCubes img {
+.lollipop-left, .lollipop-right {
+  height: 70%;
+  width: 70%;
+}
+
+.lollipop-right {
+  float: right;
+}
+
+.cube {
   height: 15%;
   width: 15%;
 }

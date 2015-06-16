@@ -116,8 +116,14 @@ var cubesView = Backbone.View.extend({
     var numCubes = Math.floor(this.model.get('cubes'));
     var fractionCube = this.model.get('cubes') - numCubes;
     for(var i = 0; i < numCubes; i++) {
-      this.$el.append('<img src="assets/sugar_cube1.png"/>');
+      this.$el.append('<img class="cube" src="assets/sugar_cube1_white.png"/>');
     }
+
+    this.$el.append('<img class="fraction" src="assets/sugar_cube1_white.png"/>');
+    $('.fraction').css({
+      height: fractionCube*15 + '%', 
+      width: fractionCube*15 + '%'
+    });
   }
 });
 
@@ -199,8 +205,8 @@ var getInfo = function(brandItem, nutritionInfo) {
   // });
   nutritionInfo.set({
         name: 'This item', 
-        sugar: 100, 
-        cubes: Math.round(100/4*1000)/1000
+        sugar: 103, 
+        cubes: Math.round(103/4*1000)/1000
       });
 };
 
